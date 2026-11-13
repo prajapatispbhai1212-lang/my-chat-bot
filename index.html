@@ -1,11 +1,10 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Story Generator</title>
+<title>My AI Chatbot</title>
 
 <style>
 * {
@@ -16,239 +15,276 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #141e30, #243b55);
+    background: #101522;
     color: white;
-    min-height: 100vh;
-    padding: 25px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.container {
+.chat-container {
+    width: 100%;
     max-width: 850px;
-    margin: 40px auto;
-    background: rgba(255,255,255,0.08);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    height: 95vh;
+    background: #192231;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #344054;
 }
 
-h1 {
-    text-align: center;
-    color: #ffd369;
-    margin-bottom: 10px;
+.header {
+    padding: 20px;
+    background: #202d40;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.subtitle {
-    text-align: center;
-    color: #ddd;
-    margin-bottom: 30px;
+.header h2 {
+    color: #54d6bb;
 }
 
-label {
-    display: block;
-    margin: 18px 0 8px;
-    font-weight: bold;
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 14px;
+.header button {
+    background: #e74c3c;
+    color: white;
     border: none;
-    outline: none;
-    border-radius: 10px;
-    font-size: 16px;
-    background: #f4f4f4;
-    color: #222;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-button {
-    border: none;
-    padding: 14px 20px;
-    border-radius: 10px;
+    padding: 9px 14px;
+    border-radius: 7px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 20px;
-    transition: 0.3s;
 }
 
-.generate-btn {
-    width: 100%;
-    background: #ffd369;
-    color: #222;
+.chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
-.output {
-    margin-top: 30px;
-    padding: 25px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 12px;
-    line-height: 1.8;
+.message {
+    max-width: 80%;
+    padding: 13px 16px;
+    border-radius: 13px;
+    line-height: 1.6;
     white-space: pre-wrap;
-    min-height: 100px;
+    overflow-wrap: anywhere;
 }
 
-.actions {
+.user {
+    background: #087f70;
+    align-self: flex-end;
+}
+
+.bot {
+    background: #303d50;
+    align-self: flex-start;
+}
+
+.input-area {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
+    padding: 18px;
+    background: #202d40;
 }
 
-.actions button {
-    background: #ffd369;
-    color: #222;
+.input-area input {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-size: 16px;
 }
 
-#status {
-    margin-top: 15px;
-    color: #ffd369;
-    text-align: center;
+.input-area button {
+    padding: 0 23px;
+    border: none;
+    background: #54d6bb;
+    color: #101522;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.input-area button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.typing {
+    color: #54d6bb;
+    font-size: 13px;
+    padding: 0 20px 10px;
+}
+
+@media(max-width: 600px) {
+    .chat-container {
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .message {
+        max-width: 90%;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="chat-container">
 
-    <h1>✨ AI Story Generator</h1>
-    <p class="subtitle">
-        Turn your imagination into amazing stories!
-    </p>
-
-    <label>Enter Your Story Idea</label>
-    <textarea id="idea"
-    placeholder="Example: A boy discovers a magical world..."></textarea>
-
-    <label>Select Story Genre</label>
-    <select id="genre">
-        <option>Fantasy</option>
-        <option>Horror</option>
-        <option>Romance</option>
-        <option>Adventure</option>
-        <option>Science Fiction</option>
-        <option>Mystery</option>
-        <option>Comedy</option>
-        <option>Fairy Tale</option>
-    </select>
-
-    <label>Story Length</label>
-    <select id="length">
-        <option value="short">Short Story</option>
-        <option value="medium">Medium Story</option>
-        <option value="long">Long Story</option>
-    </select>
-
-    <button class="generate-btn" onclick="generateStory()">
-        ✨ Generate AI Story
-    </button>
-
-    <p id="status"></p>
-
-    <div class="output" id="output">
-        Your generated story will appear here...
+    <div class="header">
+        <h2>🤖 My AI Chatbot</h2>
+        <button onclick="clearChat()">Clear Chat</button>
     </div>
 
-    <div class="actions">
-        <button onclick="copyStory()">📋 Copy Story</button>
-        <button onclick="downloadStory()">⬇ Download Story</button>
+    <div class="chat-box" id="chatBox">
+
+        <div class="message bot">
+            Hello! 👋 Welcome to My AI Chatbot.
+            How can I help you today?
+        </div>
+
+    </div>
+
+    <div class="typing" id="typing"></div>
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Ask me anything..."
+            autocomplete="off"
+        >
+
+        <button id="sendButton" onclick="sendMessage()">
+            Send ➤
+        </button>
+
     </div>
 
 </div>
 
 <script>
 
-// Replace this URL with your own backend API endpoint.
-const API_URL = "/api/generate-story";
+// Your backend API endpoint
+const API_URL = "/api/chat";
 
-async function generateStory() {
+const chatBox = document.getElementById("chatBox");
+const userInput = document.getElementById("userInput");
+const typing = document.getElementById("typing");
+const sendButton = document.getElementById("sendButton");
 
-    const idea = document.getElementById("idea").value.trim();
-    const genre = document.getElementById("genre").value;
-    const length = document.getElementById("length").value;
+let conversation = [];
 
-    const output = document.getElementById("output");
-    const status = document.getElementById("status");
-    const button = document.querySelector(".generate-btn");
+function addMessage(message, sender) {
 
-    if (!idea) {
-        alert("Please enter a story idea!");
-        return;
-    }
+    const div = document.createElement("div");
 
-    status.textContent = "✨ Creating your story...";
-    button.disabled = true;
+    div.className = "message " + sender;
+    div.textContent = message;
+
+    chatBox.appendChild(div);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function sendMessage() {
+
+    const message = userInput.value.trim();
+
+    if (!message || sendButton.disabled) return;
+
+    addMessage(message, "user");
+
+    userInput.value = "";
+
+    conversation.push({
+        role: "user",
+        content: message
+    });
+
+    typing.textContent = "AI is typing...";
+
+    sendButton.disabled = true;
 
     try {
 
         const response = await fetch(API_URL, {
+
             method: "POST",
+
             headers: {
                 "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
-                idea: idea,
-                genre: genre,
-                length: length
+                messages: conversation
             })
+
         });
 
         if (!response.ok) {
-            throw new Error("Story generation failed");
+            throw new Error("API request failed");
         }
 
         const data = await response.json();
 
-        output.textContent = data.story;
-        status.textContent = "✅ Your story is ready!";
+        const reply = data.reply;
+
+        if (typeof reply !== "string") {
+            throw new Error("Invalid AI response");
+        }
+
+        addMessage(reply, "bot");
+
+        conversation.push({
+            role: "assistant",
+            content: reply
+        });
 
     } catch (error) {
 
-        status.textContent =
-            "Could not connect to the AI server. Please try again.";
-
-        output.textContent =
-            "Please configure your backend API to generate real AI stories.";
+        addMessage(
+            "Sorry! I cannot connect to the AI server. Please try again later.",
+            "bot"
+        );
 
     } finally {
-        button.disabled = false;
+
+        typing.textContent = "";
+        sendButton.disabled = false;
+        userInput.focus();
+
     }
 }
 
-function copyStory() {
+function clearChat() {
 
-    const story = document.getElementById("output").textContent;
+    chatBox.innerHTML = "";
 
-    navigator.clipboard.writeText(story)
-        .then(() => alert("Story copied successfully!"))
-        .catch(() => alert("Could not copy story."));
+    conversation = [];
+
+    addMessage(
+        "Hello! 👋 Welcome back. How can I help you?",
+        "bot"
+    );
+
 }
 
-function downloadStory() {
+userInput.addEventListener("keydown", function(event) {
 
-    const story = document.getElementById("output").textContent;
+    if (event.key === "Enter") {
+        sendMessage();
+    }
 
-    const blob = new Blob([story], {
-        type: "text/plain"
-    });
-
-    const link = document.createElement("a");
-
-    link.href = URL.createObjectURL(blob);
-    link.download = "my-ai-story.txt";
-    link.click();
-
-    URL.revokeObjectURL(link.href);
-}
+});
 
 </script>
 
