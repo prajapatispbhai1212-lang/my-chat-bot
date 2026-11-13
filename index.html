@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Story Generator</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    color: white;
+    min-height: 100vh;
+    padding: 25px;
+}
+
+.container {
+    max-width: 850px;
+    margin: 40px auto;
+    background: rgba(255,255,255,0.08);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #ffd369;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #ddd;
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    margin: 18px 0 8px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    font-size: 16px;
+    background: #f4f4f4;
+    color: #222;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+button {
+    border: none;
+    padding: 14px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.generate-btn {
+    width: 100%;
+    background: #ffd369;
+    color: #222;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+.output {
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 12px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    min-height: 100px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.actions button {
+    background: #ffd369;
+    color: #222;
+}
+
+#status {
+    margin-top: 15px;
+    color: #ffd369;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>✨ AI Story Generator</h1>
+    <p class="subtitle">
+        Turn your imagination into amazing stories!
+    </p>
+
+    <label>Enter Your Story Idea</label>
+    <textarea id="idea"
+    placeholder="Example: A boy discovers a magical world..."></textarea>
+
+    <label>Select Story Genre</label>
+    <select id="genre">
+        <option>Fantasy</option>
+        <option>Horror</option>
+        <option>Romance</option>
+        <option>Adventure</option>
+        <option>Science Fiction</option>
+        <option>Mystery</option>
+        <option>Comedy</option>
+        <option>Fairy Tale</option>
+    </select>
+
+    <label>Story Length</label>
+    <select id="length">
+        <option value="short">Short Story</option>
+        <option value="medium">Medium Story</option>
+        <option value="long">Long Story</option>
+    </select>
+
+    <button class="generate-btn" onclick="generateStory()">
+        ✨ Generate AI Story
+    </button>
+
+    <p id="status"></p>
+
+    <div class="output" id="output">
+        Your generated story will appear here...
+    </div>
+
+    <div class="actions">
+        <button onclick="copyStory()">📋 Copy Story</button>
+        <button onclick="downloadStory()">⬇ Download Story</button>
+    </div>
+
+</div>
+
+<script>
+
+// Replace this URL with your own backend API endpoint.
+const API_URL = "/api/generate-story";
+
+async function generateStory() {
+
+    const idea = document.getElementById("idea").value.trim();
+    const genre = document.getElementById("genre").value;
+    const length = document.getElementById("length").value;
+
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+    const button = document.querySelector(".generate-btn");
+
+    if (!idea) {
+        alert("Please enter a story idea!");
+        return;
+    }
+
+    status.textContent = "✨ Creating your story...";
+    button.disabled = true;
+
+    try {
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idea: idea,
+                genre: genre,
+                length: length
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Story generation failed");
+        }
+
+        const data = await response.json();
+
+        output.textContent = data.story;
+        status.textContent = "✅ Your story is ready!";
+
+    } catch (error) {
+
+        status.textContent =
+            "Could not connect to the AI server. Please try again.";
+
+        output.textContent =
+            "Please configure your backend API to generate real AI stories.";
+
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function copyStory() {
+
+    const story = document.getElementById("output").textContent;
+
+    navigator.clipboard.writeText(story)
+        .then(() => alert("Story copied successfully!"))
+        .catch(() => alert("Could not copy story."));
+}
+
+function downloadStory() {
+
+    const story = document.getElementById("output").textContent;
+
+    const blob = new Blob([story], {
+        type: "text/plain"
+    });
+
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "my-ai-story.txt";
+    link.click();
+
+    URL.revokeObjectURL(link.href);
+}
+
+</script>
+
+</body>
+</html>
